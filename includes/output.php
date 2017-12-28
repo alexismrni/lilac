@@ -174,7 +174,7 @@ function double_pane_textarea_form_element_with_enabler($backgroundColor, $form_
 		</tr>
 	<tr bgcolor="<?php echo $backgroundColor;?>">
 		<td colspan="2" class="formcell">
-			<textarea name="<?php echo $element_name;?>" rows="<?php echo $rows;?>" cols="<?php echo $cols;?>" <?php if($_POST[$form_name.'_enablers'][$enabler_name] == 0) print("DISABLED");?>><?php echo $value;?></textarea><br />	
+			<textarea name="<?php echo $element_name;?>" rows="<?php echo $rows;?>" cols="<?php echo $cols;?>" <?php if($_POST[$form_name.'_enablers'][$enabler_name] == 0) print("DISABLED");?>><?php echo $value;?></textarea><br />
 			<?php echo $element_description; ?><br />
 
 		</td>
@@ -244,9 +244,9 @@ function print_window_header($title = null, $type = "top") {
 			<div class="roundedcorner_inner_box">
 			   <div class="roundedcorner_inner_top"><div></div></div>
 			      <div class="roundedcorner_inner_content">
-	      
-	      
-	      
+
+
+
 	<?php
 }
 
