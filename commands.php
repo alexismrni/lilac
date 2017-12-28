@@ -26,6 +26,12 @@ include_once('includes/config.inc');
 // EoN_Actions
 EoN_Actions_Process("Command");
 
+include("includes/lilac-conf.php");
+$dsn = $conf['datasources']['lilac']['connection']['dsn'];
+$dbuser = $conf['datasources']['lilac']['connection']['user'];
+$dbpassword = $conf['datasources']['lilac']['connection']['password'];
+$bdd = new PDO($dsn, $dbuser, $dbpassword);
+
 if(isset($_GET['command_id'])) {
 	$command = NagiosCommandPeer::retrieveByPK($_GET['command_id']);
 	if(!$command) {
@@ -47,7 +53,7 @@ if(isset($_GET['request'])) {
 if(isset($_POST['request'])) {
 	// Load Up The Session Data
 
-	
+
 	if($_POST['request'] == 'add_command') {
 		// Error check for required fields
 		if($_POST['command_manage']['command_name']=='' or $_POST['command_manage']['command_line']=='') {
@@ -63,6 +69,7 @@ if(isset($_POST['request'])) {
 			else {
 				// All is well for error checking, add the command into the db.
 				$lilac->add_command($_POST['command_manage']);
+				$bdd->query("UPDATE nagios_command SET help = '".$_POST['command_man_help']."' WHERE id = '".$_GET['command_id']."'");
 				// Remove session data
 				unset($command);
 				$success = "Command added.";
@@ -74,9 +81,9 @@ if(isset($_POST['request'])) {
 		$c->add(NagiosCommandPeer::NAME, $_POST['command_manage']['command_name']);
 		$c->setIgnoreCase(true);
 		$c->add(NagiosCommandPeer::ID, $command->getId(), "!=");
-		
+
 		$duplicate = NagiosCommandPeer::doSelectOne($c);
-		
+
 		if($_POST['command_manage']['command_name']=='' or $_POST['command_manage']['command_line']=='') {
 			$error = "You must provide a command name and a command line.";
 			$_GET['command_add'] = 1;
@@ -88,11 +95,15 @@ if(isset($_POST['request'])) {
 			// All is well for error checking, modify the command.
 			$command->updateFromArray($_POST['command_manage']);
 			$command->save();
+			$bdd->query("UPDATE nagios_command SET help = '".$_POST['command_man_help']."' WHERE id = '".$_GET['command_id']."'");
 			$success = "Command modified.";
 			unset($command);
 		}
 	}
 }
+
+
+
 
 // Get list of commands
 $lilac->return_command_list($command_list);
@@ -103,9 +114,12 @@ print_header("Nagios Command Editor");
 <?php
 	if(isset($command) || isset($_GET['command_add'])) {
 		if(isset($command)) {
+			$sql = $bdd->query("SELECT * FROM nagios_command WHERE id = ".$_GET['command_id']."");
+			$sql->setFetchMode(PDO::FETCH_BOTH);// Mode par défaut (tableau)
+			$help = $sql->fetch();
 			print_window_header("Modify A Command", "100%");
 			?>		<form name="command_form" method="post" action="commands.php?command_id=<?php echo $command->getId();?>"><?php
-			
+
 		}
 		else {
 			print_window_header("Add A Command", "100%");
@@ -113,7 +127,7 @@ print_header("Nagios Command Editor");
 		}
 		?>
 
-			<?php 
+			<?php
 				if(isset($command))	{
 					?>
 					<input type="hidden" name="request" value="modify_command" />
@@ -137,9 +151,14 @@ print_header("Nagios Command Editor");
 			<b>Command Description:</b><br />
 			<input type="text" size="100" name="command_manage[command_desc]" value="<?php echo isset($command) ? $command->getDescription(): '';?>">
 			<?php echo $lilac->element_desc("command_desc", "nagios_commands_desc"); ?><br />
-			<br />		
 			<br />
-			<?php 
+			<b>Command Help:</b><br />
+			<textarea name="command_man_help"
+   rows="10" cols="50"><?php echo isset($command) ? $help['help']: ''; ?></textarea>
+			<?php echo $lilac->element_desc("command_help", "nagios_commands_help"); ?><br />
+			<br />
+			<br />
+			<?php
 				if(isset($command)) {
 					?>
 					<a class="btn btn-danger" href="commands.php?command_id=<?php echo $command->getId();?>&request=delete">Delete</a> <input class="btn btn-primary" type="submit" value="Modify Command" /> <a class="btn btn-default" href="commands.php">Cancel</a>
@@ -194,7 +213,7 @@ print_header("Nagios Command Editor");
 			</table>
 			</form>
 			<?php
-	
+
 		}
 		else {
 			?>
@@ -204,6 +223,6 @@ print_header("Nagios Command Editor");
 		}
 		print_window_footer();
 	}
-	
+
 print_footer();
 ?>
