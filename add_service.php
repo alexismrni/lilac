@@ -119,11 +119,11 @@ if(isset($_POST['request'])) {
 							$newInheritance->setOrder(count($templateList));
 							try {
 								$newInheritance->save();
-								$success = "Template added to inheritance chain.";				
+								$success = "Template added to inheritance chain.";
 							}
 							catch(Exception $e) {
 								$error = $e->getMessage();
-							}		
+							}
 						}
 					}
 				}
@@ -133,7 +133,7 @@ if(isset($_POST['request'])) {
 					$service->setCheckCommand(NagiosCommandPeer::retrieveByPK($_POST['service_template_add_form']['check_command'])->getId());
 				}
 				else {
-					$service->setCheckCommand(null);	
+					$service->setCheckCommand(null);
 				}
 				$service->save();
 				//The command is saved, add the parameters
@@ -149,7 +149,7 @@ if(isset($_POST['request'])) {
 				unset($_SESSION['params']);
 				unset($_SESSION['num_cmd']);
 				header("Location: service.php?id=" . $service->getId());
-				die();	
+				die();
 			}
 		}
 		else if(isset($host)) {
@@ -190,11 +190,11 @@ if(isset($_POST['request'])) {
 							$newInheritance->setOrder(count($templateList));
 							try {
 								$newInheritance->save();
-								$success = "Template added to inheritance chain.";				
+								$success = "Template added to inheritance chain.";
 							}
 							catch(Exception $e) {
 								$error = $e->getMessage();
-							}		
+							}
 						}
 					}
 				}
@@ -243,8 +243,8 @@ if(isset($_POST['request'])) {
 				die();
 			}
 		}
-		
-		
+
+
 	}
 }
 
@@ -261,9 +261,9 @@ $template_list[] = array("service_template_id" => '', "template_name" => "None")
 foreach($tempList as $tempTemplate)
 	$template_list[] = array('service_template_id' => $tempTemplate->getId(), 'template_name' => $tempTemplate->getName());
 
-	
 
-	
+
+
 print_window_header("Add Service " . $title, "100%");
 ?>
 <form name="service_template_add_form" method="post" action="add_service.php<?php echo $sublink;?>">
@@ -288,12 +288,12 @@ print_window_header("Add Service " . $title, "100%");
 <?php if(isset($host) || isset($hostTemplate)) { ?>
 	<tr bgcolor="eeeeee">
 		<td colspan="2" class="formcell">
-		<span id="output"></span>	
+		<span id="output"></span>
 		</td>
 	</tr>
 	<tr bgcolor="eeeeee">
 		<td colspan="2" class="formcell">
-			<?php 
+			<?php
 			// To create a "default" command
 			$command_list[] = array("command_id" => 0, "command_name" => "None");
 			$lilac->return_command_list($tempList);
@@ -302,8 +302,16 @@ print_window_header("Add Service " . $title, "100%");
 			}
 			form_select_element_with_enabler($command_list, "command_id", "command_name", "service_template_add_form", "check_command", "Check Command", $lilac->element_desc("check_command", "nagios_services_desc"), null);
 			?>
+			<input type="text" id="textdisabled" value="Select a command" disabled="" style=" min-width: 70%;"><br />
+<br />
+			<table width="100%" align="center" cellspacing="0" cellpadding="2" border="0">
+				<tr class="altTop">
+				<td colspan="2">Help for the command:</td>
+				</tr></table>
+			<textarea id="textareadisabled" rows="10" cols="110" readonly> Select a command to get help </textarea><br />
 		<br />
-		</td>	
+
+		</td>
 	</tr>
 	<tr bgcolor="eeeeee">
 		<td colspan="2" class="formcell">
@@ -327,7 +335,9 @@ print_window_header("Add Service " . $title, "100%");
 		echo '</td></tr>';?>
 	<tr bgcolor="eeeeee">
 		<td colspan="2" class="formcell">
-		<span id="output2"></span>	
+
+		<span id="output2"></span>
+
 		</td>
 	</tr>
 <?php } ?>
@@ -340,6 +350,48 @@ print_window_header("Add Service " . $title, "100%");
 		params = "id="+id+"&option="+option+"&option2="+option2+"&cmd="+cmd;
 		$.post("add_service_ajax.php", params, result, "html");
 	}
+
+
+
+	$("#my_select").change(function() {
+	  var id = $(this).children(":selected").attr("value");
+
+
+		function showGetResult( id )
+		{
+				 var result = null;
+				 var scriptUrl = "gets-ajax.php?action=line&id=" + id;
+				 $.ajax({
+						url: scriptUrl,
+						type: 'get',
+						dataType: 'html',
+						async: false,
+						success: function(data) {
+								result = data;
+						}
+				 });
+				 return result;
+		}
+		function showGetResult2( id )
+		{
+				 var result2 = null;
+				 var scriptUrl2 = "gets-ajax.php?action=help&id=" + id;
+				 $.ajax({
+						url: scriptUrl2,
+						type: 'get',
+						dataType: 'html',
+						async: false,
+						success: function(data) {
+								result = data;
+						}
+				 });
+				 return result;
+		}
+
+		document.getElementById("textdisabled").value = showGetResult(id);
+
+		document.getElementById("textareadisabled").innerHTML = showGetResult2(id);
+	});
 
 	function result(datas){
 		data = datas.split(";;");
