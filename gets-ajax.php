@@ -43,15 +43,15 @@ $bdd = new PDO($dsn, $dbuser, $dbpassword);
 		if ($_GET['action'] == "help") {
 
 				if ($help['help']==""){ echo 'No help for this command. You can, configure on the "Nagios commands" page.'; } else {
-					echo htmlentities($help['help']);
+					echo $help['help'];
 				}
 
-			
+
 		} else {
 
 			if ($_GET['action'] == "line") {
 
-			echo htmlentities($help['line']);
+			echo $help['line'];
 		} else {
 			echo "Action interdite";
 		}
