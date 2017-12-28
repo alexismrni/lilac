@@ -254,11 +254,11 @@ function print_window_footer() {
 	?>
 			      </div>
 			   <div class="roundedcorner_inner_bottom"><div></div></div>
-			</div>		
-	
+			</div>
+
 	      </div>
 	   <div class="roundedcorner_lilac_bottom"><div></div></div>
-	</div>	
+	</div>
 	<?php
 }
 
@@ -267,11 +267,11 @@ function print_header($title = null) {
 	global $output_config;
 	global $path_config;
 	global $sys_config;
-	
+
 	global $success;
 	global $error;
 	global $warning;
-	
+
 	?>
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 	<html>
@@ -280,7 +280,7 @@ function print_header($title = null) {
 	<meta http-equiv="X-UA-Compatible" content="IE=10">
 
 		<title><?php echo LILAC_NAME . " "; echo LILAC_VERSION;?><?php if($title) print(" - " . $title);?></title>
-    	<link rel="stylesheet" type="text/css" href="style/reset.css">	    
+    	<link rel="stylesheet" type="text/css" href="style/reset.css">
     	<link rel="stylesheet" type="text/css" href="style/lilac.css">
     	<link rel="stylesheet" type="text/css" href="style/flexigrid.css">
     	<link rel="stylesheet" type="text/css" href="style/jquery.tooltip.css">
@@ -292,9 +292,9 @@ function print_header($title = null) {
 	 	<script type="text/javascript" src="js/jquery.timers.js"></script>
 	 	<script type="text/javascript" src="js/flexigrid.js"></script>
 		<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
-	</head>	    
-	
-	
+	</head>
+
+
 	<body onload="$('form[name=\'EoN_Actions_Form\'] input').removeAttr('checked');">
 	<script language="javascript">
 
@@ -308,7 +308,7 @@ function print_header($title = null) {
 			element.disabled = true;
 		}
 	}
-		
+
 	function confirmDelete() {
 		return confirm("Are you sure ?");
   	}
@@ -325,7 +325,7 @@ function print_header($title = null) {
 			lineid.style.backgroundColor = '';
 		}
 	}
-	
+
 	function checkBox(lineid,checkid) {
 		lineid=document.getElementById(lineid);
 		checkid=document.getElementById(checkid);
@@ -338,7 +338,7 @@ function print_header($title = null) {
 			lineid.style.backgroundColor = '';
 		}
 	}
-	
+
 	function checkUncheckAll(name) {
 		if(name=='EoN_Actions_Checks_ServiceTemplate') {
 			line='Sline';
@@ -393,7 +393,7 @@ function print_header($title = null) {
 		<script type="text/javascript">
 		 $(document).ready(function() {
 			$("#statusmsg").show("slow").fadeIn("slow");
-		 });		
+		 });
 		</script>
 		<?php
 	}
@@ -406,7 +406,7 @@ function print_header($title = null) {
 		      <?php echo $success; ?>
 		      </div>
 		   <div class="roundedcorner_success_bottom"><div></div></div>
-		</div>	
+		</div>
 		<?php
 	}
 	else if(!empty($error)) {
@@ -418,7 +418,7 @@ function print_header($title = null) {
 		      <?php echo $error; ?>
 		      </div>
 		   <div class="roundedcorner_error_bottom"><div></div></div>
-		</div>	
+		</div>
 		<?php
 	}
 	else if(!empty($warning)) {
@@ -430,7 +430,7 @@ function print_header($title = null) {
 		      <?php echo $warning; ?>
 		      </div>
 		   <div class="roundedcorner_warning_bottom"><div></div></div>
-		</div>	
+		</div>
 		<?php
 	}
 
@@ -449,7 +449,7 @@ function print_footer() {
 function print_select($name, $list, $index, $index_desc, $selected = NULL, $enabled = 1) {
 	$numOfElements = count($list);
 	?>
-	<select name="<?php echo $name;?>" <?php if(!$enabled) print("DISABLED");?>>
+	<select id="my_select" name="<?php echo $name;?>" <?php if(!$enabled) print("DISABLED");?>>
 		<?php
 		for($counter = 0; $counter < $numOfElements; $counter++) {
 			?>
@@ -560,7 +560,7 @@ function print_cmd_obj_display_field($label, $cmdObj) {
 		else {
 			?>Defined In This Object<?php
 		}
-		?>" id="cmdobjparam-<?php echo $cmdTooltipCounter;?>"><?php echo $cmdObj['command']['command']->getName();?></span><?php		
+		?>" id="cmdobjparam-<?php echo $cmdTooltipCounter;?>"><?php echo $cmdObj['command']['command']->getName();?></span><?php
 		$cmdTooltipCounter++;
 		foreach($cmdObj['parameters'] as $parameterArray) {
 				?><script type="text/javascript">
@@ -578,7 +578,7 @@ function print_cmd_obj_display_field($label, $cmdObj) {
 			?>" id="cmdobjparam-<?php echo $cmdTooltipCounter;?>"><?php echo $parameterArray['parameter']->getParameter();?></span><?php
 			$cmdTooltipCounter++;
 		}
-		print("<br />");	
+		print("<br />");
 	}
 }
 
@@ -734,8 +734,8 @@ function form_select_element_with_enabler($selectList, $selectValues, $selectLab
 		<br class="clear" />
 	</div>
 	<?php
-	
-	
+
+
 }
 
 function form_text_element_with_enabler($size, $maxLength, $formName, $fieldName, $label, $description, $values, $selfID = null) {
@@ -763,12 +763,12 @@ function form_text_element_with_enabler($size, $maxLength, $formName, $fieldName
 		</div>
 		<br class="clear" />
 	</div>
-	<?php	
+	<?php
 }
 
 function form_checkbox_group_with_enabler($checkboxGroup, $formName, $fieldName, $label, $description, $values, $selfID = null) {
 	$numOfElements = count($checkboxGroup);
-	
+
 	$enabled = false;
 	$checkBoxText = "Provide Value";
 	$provided = false;
@@ -783,7 +783,7 @@ function form_checkbox_group_with_enabler($checkboxGroup, $formName, $fieldName,
 	if($provided) {
 		$checkBoxText = "Override Value";
 	}
-	
+
 	?>
 	<div class="formbox">
 		<div class="formelement">
@@ -813,5 +813,3 @@ function form_checkbox_group_with_enabler($checkboxGroup, $formName, $fieldName,
 	</div>
 	<?php
 }
-
-
