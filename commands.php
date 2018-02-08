@@ -41,7 +41,7 @@ if(isset($_GET['command_id'])) {
 }
 	if(isset($command)) {
 $sql = $bdd->query("SELECT * FROM nagios_command WHERE id = ".$_GET['command_id']."");
-$sql->setFetchMode(PDO::FETCH_BOTH);// Mode par dÃ©faut (tableau)
+$sql->setFetchMode(PDO::FETCH_BOTH);// Mode par defaut (tableau)
 $help = $sql->fetch();
 }
 
@@ -191,7 +191,7 @@ print_header("Nagios Command Editor");
 			<br /><div class="textarea" style=" display: none;">
 				<b>Command Help:</b><br />
 				<div class="srveonplugins" style=" display: none;"><?php echo $resourceCfg->getUser1();?>/ <input type="text" size="100" name="command_man_cmd" class="command_man_cmd" value="<?php echo isset($command) ? $help['help']: ''; ?>"><?php echo $lilac->element_desc("command_cmd_help", "nagios_commands_desc"); ?>
-					<br /><button type="button" class="btn btn-warning" name="runcmd" id="runcmd"><i class="fa fa-terminal" aria-hidden="true"></i> Tester la commande</button>
+					<br /><button type="button" class="btn btn-warning" name="runcmd" id="runcmd"><i class="fa fa-terminal" aria-hidden="true"></i> Test it !</button>
 						<div class="outputcmd" style=" display: none;"><div class="outputcmd2"></div><textarea id="runcmd" name="runcmd" rows="10" cols="110" readonly></textarea></div>
 
 				</div>
