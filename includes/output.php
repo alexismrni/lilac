@@ -292,6 +292,8 @@ function print_header($title = null) {
 	 	<script type="text/javascript" src="js/jquery.timers.js"></script>
 	 	<script type="text/javascript" src="js/flexigrid.js"></script>
 		<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
+
+
 	</head>
 
 
@@ -442,6 +444,44 @@ function print_footer() {
 	?>
 	</div>
 	</body>
+	<script language="javascript">
+			var select = this.value;
+			$(document).ready(jQuery('#cmdtypehelp').change(function () {
+					if ($(this).val() == 'none') $('.textarea').hide();
+					else $('.textarea').show();
+					if ($(this).val() == 'cmd') $('.srveonplugins').show();
+					else $('.srveonplugins').hide();
+					if ($(this).val() == 'text') $('.textareahelp').show();
+					else $('.textareahelp').hide();
+			}));
+
+			$(document).ready($('#cmdtypehelp').trigger('change'));
+
+			var RunCmd = jQuery('#runcmd');
+			$(document).ready(function(){
+				$('.command_man_cmd').live('keydown', function(e){
+					if(e.which === 13){ // si on appuie sur entrÃ©e
+						e.preventDefault();
+						runCmd();
+					}
+				});
+
+				RunCmd.click(runCmd);
+			});
+
+			function runCmd(){
+				$('.outputcmd').show();
+
+				var cmd = $('input[name=command_man_cmd]').val();
+				var cmdok = encodeURI(cmd);
+				var url = 'gets-ajax.php?action=helptest&id=0&cmd='+cmdok;
+
+				$.get(url, function(data){
+					$('textarea#runcmd').val(data);
+				});
+			}
+
+			</script>
 	</html>
 	<?php
 }

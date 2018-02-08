@@ -39,6 +39,12 @@ if(isset($_GET['command_id'])) {
 		die();
 	}
 }
+	if(isset($command)) {
+$sql = $bdd->query("SELECT * FROM nagios_command WHERE id = ".$_GET['command_id']."");
+$sql->setFetchMode(PDO::FETCH_BOTH);// Mode par dÃ©faut (tableau)
+$help = $sql->fetch();
+}
+
 
 
 // Action Handlers
@@ -69,7 +75,16 @@ if(isset($_POST['request'])) {
 			else {
 				// All is well for error checking, add the command into the db.
 				$lilac->add_command($_POST['command_manage']);
-				$bdd->query("UPDATE nagios_command SET help = '".$_POST['command_man_help']."' WHERE id = '".$_GET['command_id']."'");
+
+				if($_POST['cmdtypehelp'] == "none"){ $typehelp = "0"; $posthelp = $help['help'];}
+				if($_POST['cmdtypehelp'] == "cmd"){ $typehelp = "1"; $posthelp = $_POST['command_man_cmd'];}
+				if($_POST['cmdtypehelp'] == "text"){ $typehelp = "2"; $posthelp = $_POST['command_man_help'];}
+
+
+				$vowels = array("..", "~", "$", "%", "*", "&", ";", ">", "<", "!", "?", "(", "{", "[", "\"", "\'", "\`", "`", "|");
+				$posthelpparsed = str_replace($vowels, "", $posthelp);
+
+				$bdd->query("UPDATE nagios_command SET help = '".$posthelpparsed."', typehelp = '".$typehelp."' WHERE id = '".$_GET['command_id']."'");
 				// Remove session data
 				unset($command);
 				$success = "Command added.";
@@ -95,7 +110,13 @@ if(isset($_POST['request'])) {
 			// All is well for error checking, modify the command.
 			$command->updateFromArray($_POST['command_manage']);
 			$command->save();
-			$bdd->query("UPDATE nagios_command SET help = '".$_POST['command_man_help']."' WHERE id = '".$_GET['command_id']."'");
+			if($_POST['cmdtypehelp'] == "none"){ $typehelp = "0"; $posthelp = $help['help'];}
+			if($_POST['cmdtypehelp'] == "cmd"){ $typehelp = "1"; $posthelp = $_POST['command_man_cmd'];}
+			if($_POST['cmdtypehelp'] == "text"){ $typehelp = "2"; $posthelp = $_POST['command_man_help'];}
+			$vowels = array("..", "~", "$", "%", "*", "&", ";", ">", "<", "!", "?", "(", "{", "[", "\"", "\'", "\`", "`", "|");
+			$posthelpparsed = str_replace($vowels, "", $posthelp);
+
+			$bdd->query("UPDATE nagios_command SET help = '".$posthelpparsed."', typehelp = '".$typehelp."' WHERE id = '".$_GET['command_id']."'");
 			$success = "Command modified.";
 			unset($command);
 		}
@@ -109,14 +130,21 @@ if(isset($_POST['request'])) {
 $lilac->return_command_list($command_list);
 $numOfCommands = count($command_list);
 
+require_once('NagiosResource.php');
+
+$resourceCfg = NagiosResourcePeer::doSelectOne(new Criteria());
+if(!$resourceCfg) {
+	$resourceCfg = new NagiosResource();
+	$resourceCfg->save();
+}
+
 print_header("Nagios Command Editor");
 ?>
-<?php
+
+			<?php
 	if(isset($command) || isset($_GET['command_add'])) {
 		if(isset($command)) {
-			$sql = $bdd->query("SELECT * FROM nagios_command WHERE id = ".$_GET['command_id']."");
-			$sql->setFetchMode(PDO::FETCH_BOTH);// Mode par défaut (tableau)
-			$help = $sql->fetch();
+
 			print_window_header("Modify A Command", "100%");
 			?>		<form name="command_form" method="post" action="commands.php?command_id=<?php echo $command->getId();?>"><?php
 
@@ -152,10 +180,24 @@ print_header("Nagios Command Editor");
 			<input type="text" size="100" name="command_manage[command_desc]" value="<?php echo isset($command) ? $command->getDescription(): '';?>">
 			<?php echo $lilac->element_desc("command_desc", "nagios_commands_desc"); ?><br />
 			<br />
-			<b>Command Help:</b><br />
-			<textarea name="command_man_help"
-   rows="10" cols="50"><?php echo isset($command) ? $help['help']: ''; ?></textarea>
-			<?php echo $lilac->element_desc("command_help", "nagios_commands_help"); ?><br />
+			<b>Command Type Help:</b><br />
+			<select id="cmdtypehelp" name="cmdtypehelp">
+	  	<option value="none" <?php if(isset($command)){ if($help['typehelp'] == "0"){ echo "selected";} } ?>>None</option>
+	  	<option value="cmd" <?php if(isset($command)){ if($help['typehelp'] == "1"){ echo "selected";} } ?> >Command line</option>
+	  	<option value="text" <?php if(isset($command)){ if($help['typehelp'] == "2"){ echo "selected";} } ?>>Text</option>
+
+			</select>
+			<?php echo $lilac->element_desc("command_select_help", "nagios_commands_desc"); ?><br />
+			<br /><div class="textarea" style=" display: none;">
+				<b>Command Help:</b><br />
+				<div class="srveonplugins" style=" display: none;"><?php echo $resourceCfg->getUser1();?>/ <input type="text" size="100" name="command_man_cmd" class="command_man_cmd" value="<?php echo isset($command) ? $help['help']: ''; ?>"><?php echo $lilac->element_desc("command_cmd_help", "nagios_commands_desc"); ?>
+					<br /><button type="button" class="btn btn-warning" name="runcmd" id="runcmd"><i class="fa fa-terminal" aria-hidden="true"></i> Tester la commande</button>
+						<div class="outputcmd" style=" display: none;"><div class="outputcmd2"></div><textarea id="runcmd" name="runcmd" rows="10" cols="110" readonly></textarea></div>
+
+				</div>
+				<div class="textareahelp" style=" display: none;"><textarea id="command_man_help" class="command_man_help" name="command_man_help"
+   		rows="10" cols="50"><?php echo isset($command) ? $help['help']: ''; ?></textarea><?php echo $lilac->element_desc("command_help", "nagios_commands_desc"); ?></div></div>
+			<br />
 			<br />
 			<br />
 			<?php
@@ -219,6 +261,7 @@ print_header("Nagios Command Editor");
 			?>
 			<br />
 			<div class="statusmsg">No Commands Exist</div>
+
 			<?php
 		}
 		print_window_footer();
