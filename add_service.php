@@ -356,8 +356,12 @@ print_window_header("Add Service " . $title, "100%");
 	$("#my_select").change(function() {
 	  var id = $(this).children(":selected").attr("value");
 
+    showGetResult(id);
 
-		function showGetResult( id )
+    showGetResult2(id);
+	});
+
+ 		function showGetResult( id )
 		{
 				 var result = null;
 				 var scriptUrl = "gets-ajax.php?action=line&id=" + id;
@@ -365,12 +369,11 @@ print_window_header("Add Service " . $title, "100%");
 						url: scriptUrl,
 						type: 'get',
 						dataType: 'html',
-						async: false,
+						async: true,
 						success: function(data) {
-								result = data;
+								document.getElementById("textdisabled").value = data;
 						}
 				 });
-				 return result;
 		}
 		function showGetResult2( id )
 		{
@@ -380,18 +383,12 @@ print_window_header("Add Service " . $title, "100%");
 						url: scriptUrl2,
 						type: 'get',
 						dataType: 'html',
-						async: false,
+						async: true,
 						success: function(data) {
-								result = data;
+								document.getElementById("textareadisabled").innerHTML = data;
 						}
 				 });
-				 return result;
 		}
-
-		document.getElementById("textdisabled").value = showGetResult(id);
-
-		document.getElementById("textareadisabled").innerHTML = showGetResult2(id);
-	});
 
 	function result(datas){
 		data = datas.split(";;");

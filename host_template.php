@@ -32,13 +32,13 @@ if(!isset($_GET['section']))
 
 if(isset($_GET['id'])) {
 	// Load template.
-	
+
 	if(!$lilac->get_host_template_info($_GET['id'], $hostTemplate)) {
 		header("Location: templates.php");
 		die();
 	}
 	else {
-		
+
 		// GET VALUES
 		$templateValues = $hostTemplate->getValues();
 	}
@@ -56,7 +56,7 @@ if(isset($_GET['request'])) {
 				$success = "Service filter deleted.";
 			}
 		}
-	
+
 		if($_GET['request'] == "delete" && $_GET['section'] == 'groups') {
 			$c = new Criteria();
 			$c->add(NagiosHostgroupMembershipPeer::HOST_TEMPLATE, $_GET['id']);
@@ -87,15 +87,15 @@ if(isset($_GET['request'])) {
 				die();
 			}
 			else {
-				$error = "Host template does not exist.";	
-			}			
+				$error = "Host template does not exist.";
+			}
 		}
 		else if($_GET['request'] == "delete" && $_GET['section'] == 'inheritance') {
 			$c = new Criteria();
 			$c->add(NagiosHostTemplateInheritancePeer::SOURCE_TEMPLATE, $hostTemplate->getId());
 			$c->addAscendingOrderByColumn(NagiosHostTemplateInheritancePeer::ORDER);
 			$inheritanceList = NagiosHostTemplateInheritancePeer::doSelect($c);
-			
+
 			$found = false;
 			for($counter = 0; $counter < count($inheritanceList); $counter++) {
 				if($inheritanceList[$counter]->getNagiosHostTemplateRelatedByTargetTemplate()->getId() == $_GET['template_id']) {
@@ -114,14 +114,14 @@ if(isset($_GET['request'])) {
 			}
 			if(empty($error)) {
 				$error = "Could not find that template specified.";
-			}	
+			}
 		}
 		else if($_GET['request'] == "movedown" && $_GET['section'] == "inheritance") {
 			$c = new Criteria();
 			$c->add(NagiosHostTemplateInheritancePeer::SOURCE_TEMPLATE, $hostTemplate->getId());
 			$c->addAscendingOrderByColumn(NagiosHostTemplateInheritancePeer::ORDER);
 			$inheritanceList = NagiosHostTemplateInheritancePeer::doSelect($c);
-			
+
 			$found = false;
 			for($counter = 0; $counter < count($inheritanceList); $counter++) {
 				if($inheritanceList[$counter]->getNagiosHostTemplateRelatedByTargetTemplate()->getId() == $_GET['template_id']) {
@@ -152,7 +152,7 @@ if(isset($_GET['request'])) {
 			$c->add(NagiosHostTemplateInheritancePeer::SOURCE_TEMPLATE, $hostTemplate->getId());
 			$c->addAscendingOrderByColumn(NagiosHostTemplateInheritancePeer::ORDER);
 			$inheritanceList = NagiosHostTemplateInheritancePeer::doSelect($c);
-			
+
 			$found = false;
 			for($counter = 0; $counter < count($inheritanceList); $counter++) {
 				if($inheritanceList[$counter]->getNagiosHostTemplateRelatedByTargetTemplate()->getId() == $_GET['template_id']) {
@@ -178,9 +178,9 @@ if(isset($_GET['request'])) {
 				$error = "Could not find that template specified.";
 			}
 		}
-		
+
 		if($_GET['request'] == "delete" && $_GET['section'] == 'contacts') {
-			if(!empty($_GET['contactgroup_id'])) {	
+			if(!empty($_GET['contactgroup_id'])) {
 				$c = new Criteria();
 				$c->add(NagiosHostContactgroupPeer::HOST_TEMPLATE, $_GET['id']);
 				$c->add(NagiosHostcontactgroupPeer::CONTACTGROUP, $_GET['contactgroup_id']);
@@ -188,7 +188,7 @@ if(isset($_GET['request'])) {
 				if($membership) {
 					$membership->delete();
 					$success = "Contact Group Deleted";
-				}			
+				}
 			}
 			else if(!empty($_GET['contact_id'])) {
 				$c = new Criteria();
@@ -213,9 +213,9 @@ if(isset($_GET['request'])) {
 			$lilac->delete_escalation($_GET['escalation_id']);
 			$success = "Escalation Deleted";
 			unset($tempData);
-		}	
+		}
 		if($_GET['request'] == "delete" && $_GET['section'] == 'checkcommand') {
-			
+
 			$commandParameter = NagiosHostCheckCommandParameterPeer::retrieveByPK($_GET['checkcommandparameter_id']);
 			if($commandParameter) {
 				$commandParameter->delete();
@@ -232,7 +232,7 @@ if(isset($_GET['request'])) {
 
 if(isset($_POST['request'])) {
 	$modifiedData = array();
-	
+
 	if(isset($_POST['host_manage']) && count($_POST['host_manage'])) {
 		foreach( $_POST['host_manage'] as $key=>$value) {
 			if( is_array( $value)) {
@@ -242,7 +242,7 @@ if(isset($_POST['request'])) {
 			}
 		}
 	}
-	
+
 	if($_POST['request'] == 'host_template_modify_general') {
 		if($modifiedData['template_name'] != $hostTemplate->getName() && $lilac->hosttemplate_exists($modifiedData['template_name'])) {
 			$error = "A host template with that name already exists!";
@@ -287,12 +287,12 @@ if(isset($_POST['request'])) {
 				$newInheritance->setOrder(count($templateList));
 				try {
 					$newInheritance->save();
-					$success = "Template added to inheritance chain.";				
+					$success = "Template added to inheritance chain.";
 				}
 				catch(Exception $e) {
 					$error = $e->getMessage();
 				}
-				
+
 
 			}
 		}
@@ -307,7 +307,7 @@ if(isset($_POST['request'])) {
 			$error = "Incorrect values for fields.  Please verify.";
 		}
 		// All is well for error checking, modify the template.
-		
+
 		else {
 			// Let's modify our host template
 			if(isset($modifiedData['initial_state'])) {
@@ -318,16 +318,16 @@ if(isset($_POST['request'])) {
 			}
 
 			if(isset($modifiedData['active_checks_enabled'])) {
-				$hostTemplate->setActiveChecksEnabled($modifiedData['active_checks_enabled']);	
+				$hostTemplate->setActiveChecksEnabled($modifiedData['active_checks_enabled']);
 			}
 			else {
 				$hostTemplate->setActiveChecksEnabled(null);
 			}
 			if(isset($modifiedData['passive_checks_enabled'])) {
-				$hostTemplate->setPassiveChecksEnabled($modifiedData['passive_checks_enabled']);	
+				$hostTemplate->setPassiveChecksEnabled($modifiedData['passive_checks_enabled']);
 			}
 			else {
-				$hostTemplate->setPassiveChecksEnabled(null);	
+				$hostTemplate->setPassiveChecksEnabled(null);
 			}
 			if(isset($modifiedData['check_period']) && $modifiedData['check_period'] != 0) {
 				$hostTemplate->setCheckPeriod(NagiosTimeperiodPeer::retrieveByPK($modifiedData['check_period'])->getId());
@@ -339,63 +339,63 @@ if(isset($_POST['request'])) {
 				$hostTemplate->setCheckCommand(NagiosCommandPeer::retrieveByPK($modifiedData['check_command'])->getId());
 			}
 			else {
-				$hostTemplate->setCheckCommand(null);	
+				$hostTemplate->setCheckCommand(null);
 			}
 
-			if(isset($modifiedData['retry_interval'])) {		
+			if(isset($modifiedData['retry_interval'])) {
 				$hostTemplate->setRetryInterval($modifiedData['retry_interval']);
 			}
 			else {
-				$hostTemplate->setRetryInterval(null);	
+				$hostTemplate->setRetryInterval(null);
 			}
 
-			if(isset($modifiedData['max_check_attempts'])) {		
+			if(isset($modifiedData['max_check_attempts'])) {
 				$hostTemplate->setMaximumCheckAttempts($modifiedData['max_check_attempts']);
 			}
 			else {
-				$hostTemplate->setMaximumCheckAttempts(null);	
+				$hostTemplate->setMaximumCheckAttempts(null);
 			}
-			if(isset($modifiedData['check_interval'])) {		
+			if(isset($modifiedData['check_interval'])) {
 				$hostTemplate->setCheckInterval($modifiedData['check_interval']);
 			}
 			else {
-				$hostTemplate->setCheckInterval(null);	
+				$hostTemplate->setCheckInterval(null);
 			}
-			if(isset($modifiedData['obsess_over_host'])) {		
+			if(isset($modifiedData['obsess_over_host'])) {
 				$hostTemplate->setObsessOverHost($modifiedData['obsess_over_host']);
 			}
 			else {
-				$hostTemplate->setObsessOverHost(null);	
+				$hostTemplate->setObsessOverHost(null);
 			}
-			if(isset($modifiedData['check_freshness'])) {		
+			if(isset($modifiedData['check_freshness'])) {
 				$hostTemplate->setCheckFreshness($modifiedData['check_freshness']);
 			}
 			else {
-				$hostTemplate->setCheckFreshness(null);	
+				$hostTemplate->setCheckFreshness(null);
 			}
-			if(isset($modifiedData['freshness_threshold'])) {		
+			if(isset($modifiedData['freshness_threshold'])) {
 				$hostTemplate->setFreshnessThreshold($modifiedData['freshness_threshold']);
 			}
 			else {
-				$hostTemplate->setFreshnessThreshold(null);	
+				$hostTemplate->setFreshnessThreshold(null);
 			}
 			if(isset($modifiedData['event_handler']) && $modifiedData['event_handler'] !=0) {
 				$hostTemplate->setEventHandler(NagiosCommandPeer::retrieveByPK($modifiedData['event_handler'])->getId());
 			}
 			else {
-				$hostTemplate->setEventHandler(null);	
+				$hostTemplate->setEventHandler(null);
 			}
 			if(isset($modifiedData['event_handler_enabled'])) {
 				$hostTemplate->setEventHandlerEnabled($modifiedData['event_handler_enabled']);
 			}
 			else {
-				$hostTemplate->setEventHandlerEnabled(null);	
+				$hostTemplate->setEventHandlerEnabled(null);
 			}
-			if(isset($modifiedData['failure_prediction_enabled'])) {		
+			if(isset($modifiedData['failure_prediction_enabled'])) {
 				$hostTemplate->setFailurePredictionEnabled($modifiedData['failure_prediction_enabled']);
 			}
 			else {
-				$hostTemplate->setFailurePredictionEnabled(null);	
+				$hostTemplate->setFailurePredictionEnabled(null);
 			}
 			$hostTemplate->save();
 			unset($_GET['edit']);
@@ -419,7 +419,7 @@ if(isset($_POST['request'])) {
 				$hostTemplate->setFlapDetectionEnabled($modifiedData['flap_detection_enabled']);
 			}
 			else {
-				$hostTemplate->setFlapDetectionEnabled(null);	
+				$hostTemplate->setFlapDetectionEnabled(null);
 			}
 			if(!isset($_POST['host_manage_checkboxes']) || !isset($_POST['host_manage_checkboxes']['flap_detection_options'])) {
 				$hostTemplate->setFlapDetectionOnUp(null);
@@ -450,16 +450,16 @@ if(isset($_POST['request'])) {
 				$hostTemplate->setLowFlapThreshold($modifiedData['low_flap_threshold']);
 			}
 			else {
-				$hostTemplate->setLowFlapThreshold(null);	
+				$hostTemplate->setLowFlapThreshold(null);
 			}
 			if(isset($modifiedData['high_flap_threshold'])) {
 				$hostTemplate->setHighFlapThreshold($modifiedData['high_flap_threshold']);
 			}
 			else {
-				$hostTemplate->setHighFlapThreshold(null);	
+				$hostTemplate->setHighFlapThreshold(null);
 			}
 			$hostTemplate->save();
-			
+
 			unset($modifiedData);
 			$success = "Host template modified.";
 			unset($_GET['edit']);
@@ -473,22 +473,22 @@ if(isset($_POST['request'])) {
 			$hostTemplate->setProcessPerfData($modifiedData['process_perf_data']);
 		}
 		else {
-			$hostTemplate->setProcessPerfData(null);	
+			$hostTemplate->setProcessPerfData(null);
 		}
 		if(isset($modifiedData['retain_status_information'])) {
 			$hostTemplate->setRetainStatusInformation($modifiedData['retain_status_information']);
 		}
 		else {
-			$hostTemplate->setRetainStatusInformation(null);	
+			$hostTemplate->setRetainStatusInformation(null);
 		}
 		if(isset($modifiedData['retain_nonstatus_information'])) {
 			$hostTemplate->setRetainNonstatusInformation($modifiedData['retain_nonstatus_information']);
 		}
 		else {
-			$hostTemplate->setRetainNonstatusInformation(null);	
+			$hostTemplate->setRetainNonstatusInformation(null);
 		}
 		$hostTemplate->save();
-		
+
 		unset($modifiedData);
 		$success = "Host template modified.";
 		unset($_GET['edit']);
@@ -499,7 +499,7 @@ if(isset($_POST['request'])) {
 			foreach($modifiedData as $tempVariable)
 				$tempVariable = trim($tempVariable);
 		}
-		if(isset($_POST['host_manage_enablers']['notification_interval']) && 
+		if(isset($_POST['host_manage_enablers']['notification_interval']) &&
 			($modifiedData['notification_interval'] == '' || $modifiedData['notification_interval'] < 0 || !is_numeric($modifiedData['notification_interval']))) {
 			$error = "Incorrect values for fields.  Please verify.";
 		}
@@ -574,35 +574,35 @@ if(isset($_POST['request'])) {
 				$hostTemplate->setFirstNotificationDelay($modifiedData['first_notification_delay']);
 			}
 			else {
-				$hostTemplate->setFirstNotificationDelay(null);	
+				$hostTemplate->setFirstNotificationDelay(null);
 			}
 
 			if(isset($modifiedData['notifications_enabled'])) {
 				$hostTemplate->setNotificationsEnabled($modifiedData['notifications_enabled']);
 			}
 			else {
-				$hostTemplate->setNotificationsEnabled(null);	
+				$hostTemplate->setNotificationsEnabled(null);
 			}
 			if(isset($modifiedData['notification_interval'])) {
 				$hostTemplate->setNotificationInterval($modifiedData['notification_interval']);
 			}
 			else {
-				$hostTemplate->setNotificationInterval(null);	
+				$hostTemplate->setNotificationInterval(null);
 			}
 			if(isset($modifiedData['notification_period'])) {
 				$hostTemplate->setNotificationPeriod(NagiosTimeperiodPeer::retrieveByPK($modifiedData['notification_period'])->getId());
 			}
 			else {
 				$hostTemplate->setNotificationPeriod(null);
-			}			
+			}
 			$hostTemplate->save();
-			
+
 			// Remove session data
 			unset($modifiedData);
 			$success = "Host template modified.";
 			unset($_GET['edit']);
 		}
-	}	
+	}
 	else if($_POST['request'] == 'add_member_command') {
 		if($lilac->host_template_has_hostgroup($_GET['id'], $modifiedData['group_add']['hostgroup_id'])) {
 			$error = "That host group already exists in that list!";
@@ -625,59 +625,51 @@ if(isset($_POST['request'])) {
 			$hostTemplate->setNotes($modifiedData['notes']);
 		}
 		else {
-			$hostTemplate->setNotes(null);	
+			$hostTemplate->setNotes(null);
 		}
 		if(isset($modifiedData['notes_url'])) {
 			$hostTemplate->setNotesUrl($modifiedData['notes_url']);
 		}
 		else {
-			$hostTemplate->setNotesUrl(null);	
+			$hostTemplate->setNotesUrl(null);
 		}
 		if(isset($modifiedData['action_url'])) {
 			$hostTemplate->setActionUrl($modifiedData['action_url']);
 		}
 		else {
-			$hostTemplate->setActionUrl(null);	
+			$hostTemplate->setActionUrl(null);
 		}
 		if(isset($modifiedData['icon_image'])) {
 			$hostTemplate->setIconImage($modifiedData['icon_image']);
+			$hostTemplate->setStatusmapImage($modifiedData['icon_image']);
+			$hostTemplate->setVrmlImage($modifiedData['icon_image']);
 		}
 		else {
-			$hostTemplate->setIconImage(null);	
+			$hostTemplate->setIconImage(null);
+			$hostTemplate->setStatusmapImage(null);
+			$hostTemplate->setVrmlImage(null);
 		}
 		if(isset($modifiedData['icon_image_alt'])) {
 			$hostTemplate->setIconImageAlt($modifiedData['icon_image_alt']);
 		}
 		else {
-			$hostTemplate->setIconImageAlt(null);	
-		}
-		if(isset($modifiedData['vrml_image'])) {
-			$hostTemplate->setVrmlImage($modifiedData['vrml_image']);
-		}
-		else {
-			$hostTemplate->setVrmlImage(null);	
-		}
-		if(isset($modifiedData['statusmap_image'])) {
-			$hostTemplate->setStatusmapImage($modifiedData['statusmap_image']);
-		}
-		else {
-			$hostTemplate->setStatusmapImage(null);	
+			$hostTemplate->setIconImageAlt(null);
 		}
 		if(isset($modifiedData['two_d_coords'])) {
 			$hostTemplate->setTwoDCoords($modifiedData['two_d_coords']);
 		}
 		else {
-			$hostTemplate->setTwoDCoords(null);	
+			$hostTemplate->setTwoDCoords(null);
 		}
 		if(isset($modifiedData['three_d_coords'])) {
 			$hostTemplate->setThreeDCoords($modifiedData['three_d_coords']);
 		}
 		else {
-			$hostTemplate->setThreeDCoords(null);	
+			$hostTemplate->setThreeDCoords(null);
 		}
 		$hostTemplate->save();
 		$success = "Updated Host Template Extended Information";
-		
+
 	}
 	else if($_POST['request'] == 'add_contact_command') {
 		$c = new Criteria();
@@ -694,13 +686,13 @@ if(isset($_POST['request'])) {
 				$membership->setTemplate($_GET['id']);
 				$membership->setNagiosContact($tempContact);
 				$membership->save();
-				$success = "New Host Template Contact Link added.";				
+				$success = "New Host Template Contact Link added.";
 			}
 			else {
 				$error = "That contact is not found.";
 			}
 		}
-	}	
+	}
 
 	else if($_POST['request'] == 'add_contactgroup_command') {
 		$c = new Criteria();
@@ -717,13 +709,13 @@ if(isset($_POST['request'])) {
 				$membership->setHostTemplate($_GET['id']);
 				$membership->setNagiosContactGroup($tempGroup);
 				$membership->save();
-				$success = "New Host Template Contact Group Link added.";				
+				$success = "New Host Template Contact Group Link added.";
 			}
 			else {
 				$error = "That contact group is not found.";
 			}
 		}
-	}	
+	}
 	else if($_POST['request'] == 'host_template_modify_autodiscovery') {
 		// Field Error Checking
 		if(count($modifiedData)) {
@@ -731,38 +723,38 @@ if(isset($_POST['request'])) {
 				$tempVariable = trim($tempVariable);
 		}
 		// All is well for error checking, modify the command.
-		if(isset($modifiedData['autodiscovery_address_filter'])) {		
+		if(isset($modifiedData['autodiscovery_address_filter'])) {
 			$hostTemplate->setAutodiscoveryAddressFilter($modifiedData['autodiscovery_address_filter']);
 		}
 		else {
-			$hostTemplate->setAutodiscoveryAddressFilter(null);	
+			$hostTemplate->setAutodiscoveryAddressFilter(null);
 		}
-		if(isset($modifiedData['autodiscovery_hostname_filter'])) {		
+		if(isset($modifiedData['autodiscovery_hostname_filter'])) {
 			$hostTemplate->setAutodiscoveryHostnameFilter($modifiedData['autodiscovery_hostname_filter']);
 		}
 		else {
-			$hostTemplate->setAutodiscoveryHostnameFilter(null);	
+			$hostTemplate->setAutodiscoveryHostnameFilter(null);
 		}
-		if(isset($modifiedData['autodiscovery_os_family_filter'])) {		
+		if(isset($modifiedData['autodiscovery_os_family_filter'])) {
 			$hostTemplate->setAutodiscoveryOsFamilyFilter($modifiedData['autodiscovery_os_family_filter']);
 		}
 		else {
-			$hostTemplate->setAutodiscoveryOsFamilyFilter(null);	
+			$hostTemplate->setAutodiscoveryOsFamilyFilter(null);
 		}
-		if(isset($modifiedData['autodiscovery_os_generation_filter'])) {		
+		if(isset($modifiedData['autodiscovery_os_generation_filter'])) {
 			$hostTemplate->setAutodiscoveryOsGenerationFilter($modifiedData['autodiscovery_os_generation_filter']);
 		}
 		else {
-			$hostTemplate->setAutodiscoveryOsGenerationFilter(null);	
+			$hostTemplate->setAutodiscoveryOsGenerationFilter(null);
 		}
-		if(isset($modifiedData['autodiscovery_os_vendor_filter'])) {		
+		if(isset($modifiedData['autodiscovery_os_vendor_filter'])) {
 			$hostTemplate->setAutodiscoveryOsVendorFilter($modifiedData['autodiscovery_os_vendor_filter']);
 		}
 		else {
-			$hostTemplate->setAutodiscoveryOsVendorFilter(null);	
+			$hostTemplate->setAutodiscoveryOsVendorFilter(null);
 		}
 		$hostTemplate->save();
-		
+
 		unset($modifiedData);
 		$success = "Host template modified.";
 		unset($_GET['edit']);
@@ -793,18 +785,18 @@ if(isset($_POST['request'])) {
 
 if(isset($_GET['id'])) {
 	// Load template.
-	
+
 	if(!$lilac->get_host_template_info($_GET['id'], $hostTemplate)) {
 		header("Location: templates.php");
 		die();
 	}
 	else {
-		
+
 		// GET VALUES
 		$templateValues = $hostTemplate->getValues();
 		// Check to see if we inherit from another template
-		
-		
+
+
 
 	}
 }
@@ -842,8 +834,8 @@ $subnav = array(
 	'escalations' => 'Escalations'
 
 	);
-	
-	
+
+
 if(isset($templateValues['check_command'])) {
 	$subnav['checkcommand'] = 'Check Command Parameters';
 }
@@ -852,7 +844,7 @@ $subnav['autodiscovery'] = 'Auto-Discovery Filters';
 
 print_header("Host Template Editor");
 	if(isset($_GET['id'])) {
-	print_window_header("Template Info for " . $hostTemplate->getName(), "100%");	
+	print_window_header("Template Info for " . $hostTemplate->getName(), "100%");
 	print_subnav($subnav, $_GET['section'], "section", $_SERVER['PHP_SELF'] . "?id=" . $_GET['id']);
 		$host_template_icon_image = $path_config['image_root'] . "server.gif";
 		if($_GET['section'] == 'general') {
@@ -872,7 +864,7 @@ print_header("Host Template Editor");
 					<b>Template Name:</b><br />
 					<input type="text" size="40" name="host_manage[template_name]" value="<?php echo $hostTemplate->getName();?>">
 					<?php echo $lilac->element_desc("template_name", "nagios_host_template_desc"); ?><br />
-					<br />		
+					<br />
 					<b>Description:</b><br />
 					<input type="text" size="80" name="host_manage[template_description]" value="<?php echo $hostTemplate->getDescription();?>">
 					<?php echo $lilac->element_desc("template_description", "nagios_host_template_desc"); ?><br />
@@ -899,7 +891,7 @@ print_header("Host Template Editor");
 		}
 		if($_GET['section'] == 'inheritance') {
 			$templateInheritances = $hostTemplate->getNagiosHostTemplateInheritances();
-			
+
 			$numOfTemplates = count($templateInheritances);
 			$exclude_list = array();
 			$exclude_list[] = $hostTemplate->getId();
@@ -908,11 +900,11 @@ print_header("Host Template Editor");
 					$exclude_list[] = $template->getId();
 				}
 			}
-		
+
                 	$c=new Criteria();
         	        $c->addAscendingOrderByColumn(NagiosHostTemplatePeer::NAME);
 	                $templateList = NagiosHostTemplatePeer::doSelect($c);
-			
+
 			?>
 			<table width="100%" border="0">
 			<tr>
@@ -973,13 +965,13 @@ print_header("Host Template Editor");
 					<form name="host_manage" method="post" action="host_template.php?id=<?php echo $_GET['id'];?>&section=checks&edit=1">
 					<input type="hidden" name="request" value="host_template_modify_checks" />
 					<input type="hidden" name="host_template_id" value="<?php echo $_GET['id'];?>">
-					<?php 
+					<?php
 					double_pane_form_window_start();
 
 						form_select_element_with_enabler($initialState_list, "value", "label", "host_manage", "initial_state", "Initial State", $lilac->element_desc("initial_state", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_select_element_with_enabler($enable_list, "values", "text", "host_manage", "active_checks_enabled", "Active Checks", $lilac->element_desc("active_checks_enabled", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_select_element_with_enabler($enable_list, "values", "text", "host_manage", "passive_checks_enabled", "Passive Checks", $lilac->element_desc("passive_checks_enabled", "nagios_hosts_desc"), $templateValues, $_GET['id']);
-					form_select_element_with_enabler($period_list, "timeperiod_id", "timeperiod_name", "host_manage", "check_period", "Check Period", $lilac->element_desc("check_period", "nagios_hosts_desc"), $templateValues, $_GET['id']);					
+					form_select_element_with_enabler($period_list, "timeperiod_id", "timeperiod_name", "host_manage", "check_period", "Check Period", $lilac->element_desc("check_period", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_select_element_with_enabler($command_list, "command_id", "command_name", "host_manage", "check_command", "Check Command", $lilac->element_desc("check_command", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_text_element_with_enabler(4, 4, "host_manage", "retry_interval", "Retry Interval", $lilac->element_desc("retry_interval", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 				form_text_element_with_enabler(4, 4, "host_manage", "max_check_attempts", "Maximum Check Attempts", $lilac->element_desc("max_check_attempts", "nagios_hosts_desc"), $templateValues, $_GET['id']);
@@ -989,9 +981,9 @@ print_header("Host Template Editor");
 					form_text_element_with_enabler(8, 8, "host_manage", "freshness_threshold", "Freshness Threshold in Seconds", $lilac->element_desc("freshness_threshold", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_select_element_with_enabler($enable_list, "values", "text", "host_manage", "event_handler_enabled", "Event Handler Enabled", $lilac->element_desc("event_handler_enabled", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_select_element_with_enabler($command_list, "command_id", "command_name", "host_manage", "event_handler", "Event Handler", $lilac->element_desc("event_handler", "nagios_hosts_desc"), $templateValues, $_GET['id']);
-					form_select_element_with_enabler($enable_list, "values", "text", "host_manage", "failure_prediction_enabled", "Failure Prediction", $lilac->element_desc("failure_prediction_enabled", "nagios_hosts_desc"), $templateValues, $_GET['id']);					
+					form_select_element_with_enabler($enable_list, "values", "text", "host_manage", "failure_prediction_enabled", "Failure Prediction", $lilac->element_desc("failure_prediction_enabled", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					double_pane_form_window_finish();
-					?>					
+					?>
 					<br />
 					<input class="btn btn-primary" type="submit" value="Update Checks" /> <a class="btn btn-default" href="host_template.php?id=<?php echo $_GET['id'];?>&section=general">Cancel</a>
 					<?php
@@ -1038,7 +1030,7 @@ print_header("Host Template Editor");
 					$flap_detection_options_checkbox_group[] =  array('field' => "flap_detection_on_up", 'label' => "Up");
 					$flap_detection_options_checkbox_group[] =  array('field' => "flap_detection_on_down", 'label' => "Down");
 					$flap_detection_options_checkbox_group[] =  array('field' => "flap_detection_on_unreachable", 'label' => "Unreachable");
-	
+
 					?>
 					<form name="host_manage" method="post" action="host_template.php?id=<?php echo $_GET['id'];?>&section=flapping&edit=1">
 					<input type="hidden" name="request" value="host_template_modify_flapping" />
@@ -1062,7 +1054,7 @@ print_header("Host Template Editor");
 					print_enabled_display_field("Flap Detection", $templateValues, "flap_detection_enabled", $_GET['id']);
 					if($hostTemplate->getFlapDetectionOnUp() !== null) {
 						?>
-						<b>Flap Detection On:</b> 
+						<b>Flap Detection On:</b>
 						<?php
 						if($hostTemplate->getFlapDetectionOnUp() || $hostTemplate->getFlapDetectionOnDown() || $hostTemplate->getFlapDetectionOnUnreachable()) {
 								if($hostTemplate->getFlapDetectionOnUp()) {
@@ -1086,7 +1078,7 @@ print_header("Host Template Editor");
 					}
 					elseif(isset($templateValues['flap_detection_on_up'])) {
 						?>
-						<b>Flap Detection On:</b> 
+						<b>Flap Detection On:</b>
 						<?php
 						if($templateValues['flap_detection_on_up']['value'] || $templateValues['flap_detection_on_down']['value'] || $templateValues['flap_detection_on_unreachable']['value']) {
 								if($templateValues['flap_detection_on_up']['value']) {
@@ -1108,7 +1100,7 @@ print_header("Host Template Editor");
 						}
 						print("<b> - Inherited From: </b><i>".$templateValues['flap_detection_on_up']['source']['name']."</i>");
 						print("<br />");
-					}					
+					}
 
 					print_display_field("Low Flap Threshold", $templateValues, "low_flap_threshold", $_GET['id']);
 					print_display_field("High Flap Threshold", $templateValues, "high_flap_threshold", $_GET['id']);
@@ -1153,7 +1145,7 @@ print_header("Host Template Editor");
 					<?php
 					print_enabled_display_field("Process Performance Data", $templateValues, "process_perf_data", $_GET['id']);
 					print_enabled_display_field("Retain Status Information", $templateValues, "retain_status_information", $_GET['id']);
-					print_enabled_display_field("Retain Non-Status Information", $templateValues, "retain_nonstatus_information", $_GET['id']);				
+					print_enabled_display_field("Retain Non-Status Information", $templateValues, "retain_nonstatus_information", $_GET['id']);
 					?>
 					<br />
 					<a class="btn btn-primary" href="host_template.php?id=<?php echo $_GET['id'];?>&section=logging&edit=1">Edit</a>
@@ -1181,11 +1173,11 @@ print_header("Host Template Editor");
 					$notification_options_checkbox_group[] = array('field' => "notification_on_flapping", 'label' => "Flapping");
 					$notification_options_checkbox_group[] = array('field' => "notification_on_scheduled_downtime", 'label' => "Scheduled Downtime");
 
-									
+
 					$stalking_options_checkbox_group[] =  array('field' => "stalking_on_up", 'label' => "Up");
 					$stalking_options_checkbox_group[] =  array('field' => "stalking_on_down", 'label' => "Down");
 					$stalking_options_checkbox_group[] =  array('field' => "stalking_on_unreachable", 'label' => "Unreachable");
-					
+
 					?>
 					<form name="host_manage" method="post" action="host_template.php?id=<?php echo $_GET['id'];?>&section=notifications&edit=1">
 					<input type="hidden" name="request" value="host_template_modify_notifications" />
@@ -1195,7 +1187,7 @@ print_header("Host Template Editor");
 					form_select_element_with_enabler($enable_list, "values", "text", "host_manage", "notifications_enabled", "Notifications", $lilac->element_desc("notifications_enabled", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_text_element_with_enabler(4, 4, "host_manage", "first_notification_delay", "First Notification Delay", $lilac->element_desc("first_notification_delay", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_text_element_with_enabler(8, 8, "host_manage", "notification_interval", "Notification Interval in Time-Units", $lilac->element_desc("notification_interval", "nagios_hosts_desc"), $templateValues, $_GET['id']);
-					form_select_element_with_enabler($period_list, "timeperiod_id", "timeperiod_name", "host_manage", "notification_period", "Notification Period", $lilac->element_desc("notification_period", "nagios_hosts_desc"), $templateValues, $_GET['id']);					
+					form_select_element_with_enabler($period_list, "timeperiod_id", "timeperiod_name", "host_manage", "notification_period", "Notification Period", $lilac->element_desc("notification_period", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_checkbox_group_with_enabler($notification_options_checkbox_group, "host_manage", "notification_options", "Notification Options", $lilac->element_desc("notification_options", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					form_checkbox_group_with_enabler($stalking_options_checkbox_group, "host_manage", "stalking_options", "Stalking Options", $lilac->element_desc("stalking_options", "nagios_hosts_desc"), $templateValues, $_GET['id']);
 					double_pane_form_window_finish();
@@ -1251,7 +1243,7 @@ print_header("Host Template Editor");
 					}
 					if($hostTemplate->getStalkingOnUp() !== null) {
 						?>
-						<b>Stalking On:</b> 
+						<b>Stalking On:</b>
 						<?php
 						if($hostTemplate->getStalkingOnUp() || $hostTemplate->getStalkingOnDown() || $hostTemplate->getStalkingOnUnreachable()) {
 								if($hostTemplate->getStalkingOnUp()) {
@@ -1275,7 +1267,7 @@ print_header("Host Template Editor");
 					}
 					elseif(isset($templateValues['stalking_on_up'])) {
 						?>
-						<b>Stalking On:</b> 
+						<b>Stalking On:</b>
 						<?php
 						if($templateValues['stalking_on_up']['value'] || $templateValues['stalking_on_down']['value'] || $templateValues['stalking_on_unreachable']['value']) {
 								if($templateValues['stalking_on_up']['value']) {
@@ -1297,7 +1289,7 @@ print_header("Host Template Editor");
 						}
 						print("<b> - Inherited From: </b><i>".$templateValues['stalking_on_up']['source']['name']."</i>");
 						print("<br />");
-					}					
+					}
 					?>
 					<br />
 					<a class="btn btn-primary" href="host_template.php?id=<?php echo $_GET['id'];?>&section=notifications&edit=1">Edit</a>
@@ -1312,19 +1304,19 @@ print_header("Host Template Editor");
 		else if($_GET['section'] == 'groups') {
 			$inherited_list = $hostTemplate->getInheritedHostGroups();
 			$numOfInheritedGroups = count($inherited_list);
-			
+
 			$lilac->get_host_template_membership_list($_GET['id'], $group_list);
 			$numOfGroups = count($group_list);
 			// Get list of host groups
 			$lilac->get_hostgroup_list($tempList);
-			
-			
+
+
 			$hostgroups_list = array();
 			foreach($tempList as $hostgroup) {
 				$hostgroups_list[] = array("hostgroup_id" => $hostgroup->getId(), "hostgroup_name" => $hostgroup->getName());
 			}
 
-			
+
 			$numOfHostGroups = count($hostgroups_list);
 			?>
 			<table width="100%" border="0">
@@ -1365,7 +1357,7 @@ print_header("Host Template Editor");
 					<?php
 				}
 				?>
-				
+
 				<table width="100%" align="center" cellspacing="0" cellpadding="2" border="0">
 					<tr class="altTop">
 					<td colspan="2">Host Group Membership:</td>
@@ -1405,17 +1397,17 @@ print_header("Host Template Editor");
 			<?php
 		}
 		else if($_GET['section'] == 'services') {
-			
+
 			$inherited_list = $hostTemplate->getInheritedServices();
 			$numOfInheritedServices = count($inherited_list);
-			
-			
+
+
 			$lilac->get_host_template_services_list($_GET['id'], $hostTemplateServiceList);
-			
+
 			$command_list[] = array("value" => 0, "text" => "None");
-			
+
 			$numOfServices = count($hostTemplateServiceList);
-			
+
 			?>
 			<table width="100%" border="0">
 			<tr>
@@ -1458,7 +1450,7 @@ print_header("Host Template Editor");
 					<?php
 				}
 				?>
-				
+
 				<table width="100%" align="center" cellspacing="0" cellpadding="2" border="0">
 					<tr class="altTop">
 					<td colspan="2">Services Explicitly Linked to This Host Template:</td>
@@ -1599,8 +1591,8 @@ print_header("Host Template Editor");
 						$directory_list[] = array("value" => $value, "text" => $value);
 				}
 			}
-			$numOfImages = count($directory_list) - 1;			
-						
+			$numOfImages = count($directory_list) - 1;
+
 			?>
 			<table width="100%" border="0">
 			<tr>
@@ -1614,32 +1606,32 @@ print_header("Host Template Editor");
 				<form name="host_manage" action="host_template.php?id=<?php echo $_GET['id'];?>&section=extended" method="post">
 				<input type="hidden" name="request" value="update_host_extended" />
 				<input type="hidden" name="host_manage[host_template_id]" value="<?php echo $_GET['id'];?>">
-				<?php
+								<?php
 				double_pane_form_window_start();
 				form_text_element_with_enabler(60, 255, "host_manage", "notes", "Notes", $lilac->element_desc("notes", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
 				form_text_element_with_enabler(60, 255, "host_manage", "notes_url", "Notes URL", $lilac->element_desc("notes_url", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
 				form_text_element_with_enabler(60, 255, "host_manage", "action_url", "Action URL", $lilac->element_desc("action_url", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
-				form_select_element_with_enabler($directory_list, "value", "text", "host_manage", "icon_image", "Icon Image", $lilac->element_desc("icon_image", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);				
+				form_select_element_with_enabler_and_img($directory_list, "value", "text", "host_manage", "icon_image", "Icon Image", $lilac->element_desc("icon_image", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
+				?><div id="imageload"> </div> <br /><iframe src="uploadimage.php" style="border:0px #ffffff none;" name="uploader" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" height="50px" width="500px" allowfullscreen></iframe><?php
 				form_text_element_with_enabler(60, 255, "host_manage", "icon_image_alt", "Icon Image Alt Text", $lilac->element_desc("icon_image_alt", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
-				form_select_element_with_enabler($directory_list, "value", "text", "host_manage", "vrml_image", "VRML Image", $lilac->element_desc("vrml_image", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
-				form_select_element_with_enabler($directory_list, "value", "text", "host_manage", "statusmap_image", "Statusmap Image", $lilac->element_desc("statusmap_image", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
 				form_text_element_with_enabler(30, 30, "host_manage", "two_d_coords", "2D Coordinates", $lilac->element_desc("two_d_coords", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
 				form_text_element_with_enabler(30, 30, "host_manage", "three_d_coords", "3D Coordinates", $lilac->element_desc("three_d_coords", "nagios_services_extended_info_desc"), $templateValues, $_GET['id']);
 				double_pane_form_window_finish();
 				?>
+
+
 				<br />
 				<input class="btn btn-primary" type="submit" value="Update Extended Information" /> <a class="btn btn-default" href="host_template.php?id=<?php echo $_GET['id'];?>&section=extended">Cancel</a>
 				</form>
 				<?php
 			} else {
-				print "<b>Included in definition:</b><br />\n";
+				print "<b>Included in definition:</b><br /><br />\n";
 				print_display_field("Notes", $templateValues, "notes", $_GET['id']);
 				print_display_field("Notes URL", $templateValues, "notes_url", $_GET['id']);
 				print_display_field("Action URL", $templateValues, "action_url", $_GET['id']);
-				print_display_field("Icon Image", $templateValues, "icon_image", $_GET['id']);
+				print "<br />";
+				print_display_field_image("Icon Image", $templateValues, "icon_image", $_GET['id']);
 				print_display_field("Icon Image Alt Text", $templateValues, "icon_image_alt", $_GET['id']);
-				print_display_field("VRML Image", $templateValues, "vrml_image", $_GET['id']);
-				print_display_field("Statusmap Image", $templateValues, "statusmap_image", $_GET['id']);
 				print_display_field("2D Coordinates", $templateValues, "two_d_coords", $_GET['id']);
 				print_display_field("3D Coordinates", $templateValues, "three_d_coords", $_GET['id']);
 				?>
@@ -1652,7 +1644,7 @@ print_header("Host Template Editor");
 			</tr>
 			</table>
 			<?php
-		}		
+		}
 		else if($_GET['section'] == 'contacts') {
 			$inherited_list = $hostTemplate->getInheritedContacts();
 			$numOfInheritedContacts = count($inherited_list);
@@ -1723,8 +1715,8 @@ print_header("Host Template Editor");
 							}
 							?>
 						</table>
-				<?php	
-				$lilac->get_contact_list($temp_list); 
+				<?php
+				$lilac->get_contact_list($temp_list);
 				$contacts_list = array();
 				foreach($temp_list as $tempContact) {
 					$contacts_list[] = array('contact_name' => $tempContact->getName(), 'contact_id' => $tempContact->getId());
@@ -1746,7 +1738,7 @@ print_header("Host Template Editor");
 			$inherited_list = $hostTemplate->getInheritedContactGroups();
 			$numOfInheritedGroups = count($inherited_list);
 
-			$lilac->return_host_template_contactgroups_list($_GET['id'], $contactgroups_list);			
+			$lilac->return_host_template_contactgroups_list($_GET['id'], $contactgroups_list);
 			$numOfContactGroups = count($contactgroups_list);
 			?>
 			<table width="100%" border="0">
@@ -1811,8 +1803,8 @@ print_header("Host Template Editor");
 							}
 							?>
 						</table>
-				<?php	
-				$lilac->get_contactgroup_list($temp_list); 
+				<?php
+				$lilac->get_contactgroup_list($temp_list);
 				$contactgroups_list = array();
 				foreach($temp_list as $tempGroup) {
 					$contactgroups_list[] = array('contactgroup_name' => $tempGroup->getName(), 'contactgroup_id' => $tempGroup->getId());
@@ -1835,7 +1827,7 @@ print_header("Host Template Editor");
 		else if($_GET['section'] == 'dependencies') {
 			$inherited_list = $hostTemplate->getInheritedDependencies();
 			$numOfInheritedDepdendencies = count($inherited_list);
-			
+
 			$dependencies_list = $hostTemplate->getNagiosDependencys();
 
 			$numOfDependencies = count($dependencies_list);
@@ -1920,7 +1912,7 @@ print_header("Host Template Editor");
 		else if($_GET['section'] == 'escalations') {
 			$inherited_list = $hostTemplate->getInheritedEscalations();
 			$numOfInheritedEscalations = count($inherited_list);
-			
+
 			$escalations_list = $hostTemplate->getNagiosEscalations();
 			$numOfEscalations = count($escalations_list);
 			?>
@@ -2021,7 +2013,7 @@ print_header("Host Template Editor");
 					form_text_element_with_enabler(40, 255, "host_manage", "autodiscovery_hostname_filter", "Hostname Filter", $lilac->element_desc("autodiscovery_hostname_filter", "host_template_autodiscovery"), $templateValues, $_GET['id']);
 					form_text_element_with_enabler(40, 255, "host_manage", "autodiscovery_os_family_filter", "Operating System Family Filter", $lilac->element_desc("autodiscovery_os_family_filter", "host_template_autodiscovery"), $templateValues, $_GET['id']);
 					form_text_element_with_enabler(40, 255, "host_manage", "autodiscovery_os_generation_filter", "Operating System Generation Filter", $lilac->element_desc("autodiscovery_os_generation_filter", "host_template_autodiscovery"), $templateValues, $_GET['id']);
-					form_text_element_with_enabler(40, 255, "host_manage", "autodiscovery_os_vendor_filter", "Operating system Vendor Filter", $lilac->element_desc("autodiscovery_os_vendor_filter", "host_template_autodiscovery"), $templateValues, $_GET['id']);					
+					form_text_element_with_enabler(40, 255, "host_manage", "autodiscovery_os_vendor_filter", "Operating system Vendor Filter", $lilac->element_desc("autodiscovery_os_vendor_filter", "host_template_autodiscovery"), $templateValues, $_GET['id']);
 					double_pane_form_window_finish();
 					?>
 					<br />
@@ -2044,10 +2036,10 @@ print_header("Host Template Editor");
 					<?php
 					$inherited_list = $hostTemplate->getInheritedNagiosAutodiscoveryServiceFilters();
 					$numOfInheritedFilters = count($inherited_list);
-					
+
 					$filter_list = $hostTemplate->getNagiosHostTemplateAutodiscoveryServices();
 					$numOfFilters = count($filter_list);
-					
+
 					if($numOfInheritedFilters) {
 						?>
 						<p>

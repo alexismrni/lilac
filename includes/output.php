@@ -366,6 +366,8 @@ function print_header($title = null) {
         	}
 	}
 
+
+
 	</script>
 
 	<div id="header">
@@ -481,6 +483,30 @@ function print_footer() {
 				});
 			}
 
+
+			$("#my_select_img").change(function() {
+		  var id = $(this).children(":selected").attr("value");
+
+	    showGetResult3(id);
+
+		});
+
+	 		function showGetResult3( id )
+			{
+					 var result3 = null;
+					 var scriptUrl3 = "gets-ajax.php?action=img&id=" + id;
+					 $.ajax({
+							url: scriptUrl3,
+							type: 'get',
+							dataType: 'html',
+							async: true,
+							success: function(data) {
+										$('#imageload').html(data);
+							}
+					 });
+			}
+
+
 			</script>
 	</html>
 	<?php
@@ -490,6 +516,21 @@ function print_select($name, $list, $index, $index_desc, $selected = NULL, $enab
 	$numOfElements = count($list);
 	?>
 	<select id="my_select" name="<?php echo $name;?>" <?php if(!$enabled) print("DISABLED");?>>
+		<?php
+		for($counter = 0; $counter < $numOfElements; $counter++) {
+			?>
+			<option <?php if($selected == $list[$counter][$index]) print("SELECTED");?> value="<?php echo $list[$counter][$index];?>"><?php echo $list[$counter][$index_desc];?></option>
+			<?php
+		}
+		?>
+	</select>
+	<?php
+}
+
+function print_img_select($name, $list, $index, $index_desc, $selected = NULL, $enabled = 1) {
+	$numOfElements = count($list);
+	?>
+	<select id="my_select_img" name="<?php echo $name;?>" <?php if(!$enabled) print("DISABLED");?>>
 		<?php
 		for($counter = 0; $counter < $numOfElements; $counter++) {
 			?>
@@ -686,6 +727,19 @@ function print_display_field($label, $values, $field, $sourceID = null) {
 	}
 }
 
+function print_display_field_image($label, $values, $field, $sourceID = null) {
+	if(isset($values[$field])) {
+		print("<strong>" . $label . "</strong>: ");
+		print("<img src='/thruk/themes/EyesOfNetwork/images/logos/".$values[$field]['value']."' border='0' />");
+		print("<br />");
+		print($values[$field]['value']);
+		if($values[$field]['inherited']) {
+			?><strong> - Inherited From <em><?php echo $values[$field]['source']['name'];?></em></strong><?php
+		}
+		print("<br /> <br />");
+	}
+}
+
 function print_service_initialstate_display_field($label, $values, $field, $sourceID) {
 	if(isset($values[$field])) {
 		print("<strong>" . $label . "</strong>: ");
@@ -765,6 +819,36 @@ function form_select_element_with_enabler($selectList, $selectValues, $selectLab
 		<div class="formelement">
 			<div class="formcontent toggle">
 			<strong><?php echo $label;?>:</strong> <?php print_select($formName . "[" .$fieldName ."]", $selectList, $selectValues, $selectLabels, $value, $enabled);?>
+			<?php echo $description;?>
+			</div>
+		</div>
+		<div class="formtoggle">
+			<input type="checkbox" name="<?php echo $formName;?>_checkboxes[<?php echo $fieldName;?>]" value="1" id="<?php echo $formName;?>_checkboxes[<?php echo $fieldName;?>]" <?php if($enabled) print("CHECKED");?> onclick="form_element_switch(document.<?php echo $formName;?>.elements['<?php echo $formName . "[" . $fieldName . "]";?>'], document.<?php echo $formName;?>.elements['<?php echo $formName;?>_checkboxes[<?php echo $fieldName;?>]']);" /><label for="<?php echo $formName;?>_checkboxes[<?php echo $fieldName;?>]"><b><?php echo $checkBoxText;?></b></label>
+		</div>
+		<br class="clear" />
+	</div>
+	<?php
+
+
+}
+
+function form_select_element_with_enabler_and_img($selectList, $selectValues, $selectLabels, $formName, $fieldName, $label, $description, $values, $selfID = null) {
+	$enabled = false;
+	$value = null;
+	$checkBoxText = "Provide Value";
+	if(isset($values[$fieldName]) && $values[$fieldName]['source']['id'] == $selfID  && !$values[$fieldName]['inherited']) {
+		$enabled = true;
+		$value = $values[$fieldName]['value'];
+	}
+	else if(isset($values[$fieldName])) {
+		$checkBoxText = "Override Value";
+		$value = $values[$fieldName]['value'];
+	}
+	?>
+	<div class="formbox">
+		<div class="formelement">
+			<div class="formcontent toggle">
+			<strong><?php echo $label;?>:</strong> <?php print_img_select($formName . "[" .$fieldName ."]", $selectList, $selectValues, $selectLabels, $value, $enabled);?>
 			<?php echo $description;?>
 			</div>
 		</div>

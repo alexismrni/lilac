@@ -21,6 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /*
 This page is required to get (in ajax) the command you need when you want to add a service on a host.
 */
+
+
+if ($_GET['action'] == "img") {
+	echo "<img src='/thruk/themes/EyesOfNetwork/images/logos/".$_GET['id']."' border='0'/>";
+	exit;
+	}
+
+
 require_once('includes/config.inc');
 include("includes/lilac-conf.php");
 
@@ -96,10 +104,13 @@ if(!$resourceCfg) {
 						if ($retval == "126") { echo "Error with your help command: probably because there is a space before your command or you don't have the rights to run your script."; } else { echo $retval; }
 						 }
 				} else {
-						echo "Forbidden";
-				}
-		}
 
+
+							echo "Forbidden";
+
+
+			}
+		}
 	}
 
 
